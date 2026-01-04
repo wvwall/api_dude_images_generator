@@ -9,6 +9,11 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  // Enable CORS in non-production environments (development/testing)
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors();
+  }
+
   const config = new DocumentBuilder()
     .setTitle('Dude Images Generator API')
     .setDescription('The Dude Images Generator API description')
