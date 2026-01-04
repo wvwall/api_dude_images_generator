@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../prisma/prisma.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { Image } from '@prisma/client';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 export type ImageEntity = Omit<Image, 'timestamp'> & { timestamp: number };
 
