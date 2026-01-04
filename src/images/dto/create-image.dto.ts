@@ -1,12 +1,7 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateImageDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  id: string;
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -16,10 +11,6 @@ export class CreateImageDto {
   @IsString()
   @IsNotEmpty()
   prompt: string;
-
-  @ApiProperty()
-  @IsNumber()
-  timestamp: number;
 
   @ApiProperty()
   @IsString()
