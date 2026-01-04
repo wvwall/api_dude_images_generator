@@ -17,7 +17,7 @@ model Image {
   id          String @id
   url         String
   prompt      String
-  timestamp   BigInt
+  timestamp   DateTime
   aspectRatio String
 
   @@map("images")

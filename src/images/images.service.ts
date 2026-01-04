@@ -3,7 +3,7 @@ import { CreateImageDto } from './dto/create-image.dto';
 import { Image } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-export type ImageEntity = Omit<Image, 'timestamp'> & { timestamp: number };
+export type ImageEntity = Omit<Image, 'timestamp'>;
 
 @Injectable()
 export class ImagesService {
@@ -15,11 +15,7 @@ export class ImagesService {
         timestamp: 'desc',
       },
     });
-    // Convert BigInt to Number for JSON serialization
-    return images.map((img) => ({
-      ...img,
-      timestamp: Number(img.timestamp),
-    }));
+    return images;
   }
 
   async findOne(id: string): Promise<ImageEntity | null> {
@@ -29,10 +25,7 @@ export class ImagesService {
 
     if (!image) return null;
 
-    return {
-      ...image,
-      timestamp: Number(image.timestamp),
-    };
+    return image;
   }
 
   async create(createImageDto: CreateImageDto): Promise<void> {

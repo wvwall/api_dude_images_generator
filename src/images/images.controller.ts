@@ -4,7 +4,7 @@ import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 
 @ApiTags('images')
-@Controller('images')
+@Controller({ path: 'images', version: '1' })
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
