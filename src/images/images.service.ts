@@ -32,8 +32,6 @@ export class ImagesService {
     await this.prisma.image.create({
       data: {
         ...createImageDto,
-        id: crypto.randomUUID(),
-        timestamp: Date.now(),
       },
     });
   }
