@@ -32,7 +32,6 @@ export class ImagesService {
     await this.prisma.image.create({
       data: {
         ...createImageDto,
-        timestamp: BigInt(createImageDto.timestamp),
       },
     });
   }

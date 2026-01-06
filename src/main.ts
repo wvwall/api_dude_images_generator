@@ -8,6 +8,12 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
+  app.setGlobalPrefix('api');
+
+  // Enable CORS in non-production environments (development/testing)
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors();
+  }
 
   const config = new DocumentBuilder()
     .setTitle('Dude Images Generator API')
