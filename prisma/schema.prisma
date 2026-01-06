@@ -18,8 +18,8 @@ model Image {
   prompt      String
   timestamp   DateTime @default(now())
   aspectRatio String
-  user        User? @relation(fields: [userId], references: [id])
-  userId      String?
+  user        User @relation(fields: [userId], references: [id])
+  userId      String
 
   @@map("images")
 }
