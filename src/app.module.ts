@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ImagesModule } from './images/images.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 @Module({
@@ -12,6 +13,7 @@ import { LoggerModule } from 'nestjs-pino';
       envFilePath: '.env',
     }),
     ImagesModule,
+    AuthModule,
     PrismaModule,
     LoggerModule.forRoot({
       pinoHttp: {

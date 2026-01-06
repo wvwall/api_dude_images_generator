@@ -18,6 +18,19 @@ model Image {
   prompt      String
   timestamp   DateTime @default(now())
   aspectRatio String
+  user        User @relation(fields: [userId], references: [id])
+  userId      String
 
   @@map("images")
+}
+
+model User {
+  id        String @id @default(uuid())
+  username  String @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  images    Image[]
+
+  @@map("users")
 }
