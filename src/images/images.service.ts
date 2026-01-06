@@ -9,8 +9,9 @@ export type ImageEntity = Omit<Image, 'timestamp'>;
 export class ImagesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<ImageEntity[]> {
+  async findAll(userId: string): Promise<ImageEntity[]> {
     const images = await this.prisma.image.findMany({
+      where: { userId },
       orderBy: {
         timestamp: 'desc',
       },
@@ -18,9 +19,9 @@ export class ImagesService {
     return images;
   }
 
-  async findOne(id: string): Promise<ImageEntity | null> {
+  async findOne(id: string, userId: string): Promise<ImageEntity | null> {
     const image = await this.prisma.image.findUnique({
-      where: { id },
+      where: { id, userId },
     });
 
     if (!image) return null;
@@ -28,10 +29,11 @@ export class ImagesService {
     return image;
   }
 
-  async create(createImageDto: CreateImageDto): Promise<void> {
+  async create(createImageDto: CreateImageDto, userId: string): Promise<void> {
     await this.prisma.image.create({
       data: {
         ...createImageDto,
+        userId,
       },
     });
   }

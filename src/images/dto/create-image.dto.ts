@@ -16,9 +16,4 @@ export class CreateImageDto {
   @IsString()
   @IsNotEmpty()
   aspectRatio: string;
-
-  @ApiProperty({ description: 'ID of the user who owns this image' })
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 }
