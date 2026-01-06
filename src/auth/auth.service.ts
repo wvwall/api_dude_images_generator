@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -11,13 +12,21 @@ import { User } from '@prisma/client';
 
 export type UserWithoutPassword = Omit<User, 'password'>;
 
+export interface AuthResponse {
+  user: UserWithoutPassword;
+  accessToken: string;
+}
+
 const SALT_ROUNDS = 10;
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
-  async register(registerDto: RegisterUserDto): Promise<UserWithoutPassword> {
+  async register(registerDto: RegisterUserDto): Promise<AuthResponse> {
     // Check if username already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { username: registerDto.username },
@@ -38,13 +47,19 @@ export class AuthService {
       },
     });
 
-    // Return user without password
+    // Return user without password + access token
     const { password, ...userWithoutPassword } = user;
     void password;
-    return userWithoutPassword;
+
+    const accessToken = this.generateToken(user.id, user.username);
+
+    return {
+      user: userWithoutPassword,
+      accessToken,
+    };
   }
 
-  async login(loginDto: LoginUserDto): Promise<UserWithoutPassword> {
+  async login(loginDto: LoginUserDto): Promise<AuthResponse> {
     // Find user by username
     const user = await this.prisma.user.findUnique({
       where: { username: loginDto.username },
@@ -64,9 +79,20 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Return user without password
+    // Return user without password + access token
     const { password: pw, ...userWithoutPassword } = user;
     void pw;
-    return userWithoutPassword;
+
+    const accessToken = this.generateToken(user.id, user.username);
+
+    return {
+      user: userWithoutPassword,
+      accessToken,
+    };
+  }
+
+  private generateToken(userId: string, username: string): string {
+    const payload = { sub: userId, username };
+    return this.jwtService.sign(payload);
   }
 }
