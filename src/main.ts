@@ -1,6 +1,7 @@
 import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as express from 'express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -15,6 +16,9 @@ async function bootstrap() {
     app.enableCors();
   }
 
+  // ...existing code...
+  app.use('/uploads', express.static('uploads'));
+  // ...existing code...
   const config = new DocumentBuilder()
     .setTitle('Dude Images Generator API')
     .setDescription('The Dude Images Generator API description')
