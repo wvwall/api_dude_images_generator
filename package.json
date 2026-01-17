@@ -17,7 +17,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "env:dev": "cp .env.development .env && echo '✅ Switched to DEVELOPMENT environment (local Docker DB)'",
+    "env:prod": "cp .env.production .env && echo '✅ Switched to PRODUCTION environment (Supabase DB)'",
+    "prisma:migrate:dev": "npm run env:dev && npx prisma migrate dev",
+    "prisma:migrate:prod": "npm run env:prod && dotenv -e .env.production -- sh -c 'DATABASE_URL=$DIRECT_URL npx prisma migrate deploy' && npm run prisma:rls:prod",
+    "prisma:rls:prod": "npm run env:prod && dotenv -e .env.production -- sh -c 'DATABASE_URL=$DIRECT_URL npx prisma db execute --file prisma/enable-rls.sql --schema prisma/schema.prisma'",
+    "prisma:studio:dev": "npm run env:dev && npx prisma studio",
+    "prisma:studio:prod": "npm run env:prod && npx prisma studio",
+    "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -55,6 +63,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/pg": "^8.16.0",
     "@types/supertest": "^6.0.2",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

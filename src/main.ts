@@ -11,10 +11,15 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  // Enable CORS in non-production environments (development/testing)
-  if (process.env.NODE_ENV !== 'production') {
-    app.enableCors();
-  }
+  // Enable CORS with proper configuration
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
 
   // ...existing code...
   app.use('/uploads', express.static('uploads'));
