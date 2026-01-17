@@ -62,4 +62,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 api-guide.md
 settings.local.json
-
+uploads/*
