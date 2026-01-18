@@ -2,13 +2,15 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { CreateImageDto } from './dto/create-image.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import type { MulterFile } from './interfaces/multer-file.interface';
+import { SupabaseStorageService } from 'src/storage/supabase-storage.service';
+import type { MulterMemoryFile } from './interfaces/multer-memory-file.interface';
 
 @Injectable()
 export class ImagesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: Logger,
+    private readonly storageService: SupabaseStorageService,
   ) {}
 
   async findAll(userId: string) {
@@ -58,24 +60,29 @@ export class ImagesService {
   }
 
   async create(
-    file: MulterFile,
+    file: MulterMemoryFile,
     createImageDto: CreateImageDto,
     userId: string,
   ) {
-    try {
-      this.logger.log(`Creating image for user: ${userId}`);
+    this.logger.log(`Creating image for user: ${userId}`);
 
+    let assetId: string | null = null;
+    let imageId: string | null = null;
+
+    try {
+      // STEP 1: Crea Asset con path placeholder
       const asset = await this.prisma.asset.create({
         data: {
           filename: file.originalname,
           mimeType: file.mimetype,
           size: file.size,
-          path: file.path,
+          path: 'pending-upload',
         },
       });
+      assetId = asset.id;
+      this.logger.log(`Created asset with placeholder: ${asset.id}`);
 
-      this.logger.log(`Created asset: ${asset.id}`);
-
+      // STEP 2: Crea Image collegata all'Asset
       const image = await this.prisma.image.create({
         data: {
           prompt: createImageDto.prompt,
@@ -83,15 +90,57 @@ export class ImagesService {
           userId,
           assetId: asset.id,
         },
-        include: {
-          asset: true,
-        },
       });
-
+      imageId = image.id;
       this.logger.log(`Created image: ${image.id} with asset: ${asset.id}`);
-      return image;
+
+      // STEP 3: Upload su Supabase (ULTIMA OPERAZIONE)
+      const uploadResult = await this.storageService.upload({
+        buffer: file.buffer,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+      });
+      this.logger.log(`Uploaded to Supabase: ${uploadResult.publicUrl}`);
+
+      // STEP 4: Aggiorna Asset con URL Supabase
+      await this.prisma.asset.update({
+        where: { id: asset.id },
+        data: { path: uploadResult.publicUrl },
+      });
+      this.logger.log(`Updated asset path to: ${uploadResult.publicUrl}`);
+
+      // Ritorna Image con Asset aggiornato
+      return this.prisma.image.findUnique({
+        where: { id: image.id },
+        include: { asset: true },
+      });
     } catch (error) {
       this.logger.error(`Failed to create image for user: ${userId}`, error);
+
+      // ROLLBACK: Se abbiamo creato record nel DB ma upload è fallito
+      if (imageId) {
+        try {
+          await this.prisma.image.delete({ where: { id: imageId } });
+          this.logger.log(`Rollback: deleted image ${imageId}`);
+        } catch (deleteError) {
+          this.logger.error(
+            `Rollback failed for image ${imageId}`,
+            deleteError,
+          );
+        }
+      }
+      if (assetId) {
+        try {
+          await this.prisma.asset.delete({ where: { id: assetId } });
+          this.logger.log(`Rollback: deleted asset ${assetId}`);
+        } catch (deleteError) {
+          this.logger.error(
+            `Rollback failed for asset ${assetId}`,
+            deleteError,
+          );
+        }
+      }
+
       throw new InternalServerErrorException('Failed to create image');
     }
   }
@@ -110,10 +159,21 @@ export class ImagesService {
         return null;
       }
 
+      // Prima elimina da Supabase Storage
+      if (image.asset) {
+        const storagePath = this.storageService.extractPathFromUrl(
+          image.asset.path,
+        );
+        if (storagePath) {
+          await this.storageService.delete(storagePath);
+          this.logger.log(`Deleted from Supabase: ${storagePath}`);
+        }
+      }
+
+      // Poi elimina dal DB
       await this.prisma.image.delete({
         where: { id },
       });
-
       this.logger.log(`Deleted image: ${id}`);
 
       if (image.asset) {

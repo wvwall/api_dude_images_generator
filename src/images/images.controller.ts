@@ -25,7 +25,7 @@ import { ImagesService } from './images.service';
 import { CreateImageDto, CreateImageSwaggerDto } from './dto/create-image.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import type { RequestWithUser } from 'src/auth/interfaces/active-user.interface';
-import type { MulterFile } from './interfaces/multer-file.interface';
+import type { MulterMemoryFile } from './interfaces/multer-memory-file.interface';
 import { multerConfig } from './config/multer.config';
 
 @ApiTags('images')
@@ -69,7 +69,7 @@ export class ImagesController {
   })
   @ApiResponse({ status: 400, description: 'Invalid file or missing fields.' })
   async create(
-    @UploadedFile() file: MulterFile | undefined,
+    @UploadedFile() file: MulterMemoryFile | undefined,
     @Body() createImageDto: CreateImageDto,
     @Request() req: RequestWithUser,
   ) {
