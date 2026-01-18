@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ImagesModule } from './images/images.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { StorageModule } from './storage/storage.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 @Module({
@@ -12,6 +13,7 @@ import { LoggerModule } from 'nestjs-pino';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    StorageModule,
     ImagesModule,
     AuthModule,
     PrismaModule,
