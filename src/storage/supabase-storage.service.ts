@@ -20,7 +20,6 @@ export interface FileBuffer {
 export class SupabaseStorageService {
   private supabase: SupabaseClient<any, any, any>;
   private readonly bucket = 'dude_generator_storage';
-  private readonly folder = 'images';
 
   constructor(
     private readonly config: ConfigService,
@@ -36,11 +35,14 @@ export class SupabaseStorageService {
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
-  async upload(file: FileBuffer): Promise<UploadResult> {
+  async upload(
+    file: FileBuffer,
+    folder: 'images' | 'videos' = 'images',
+  ): Promise<UploadResult> {
     const uuid = randomUUID();
     const ext = extname(file.originalname);
     const filename = `${uuid}${ext}`;
-    const path = `${this.folder}/${filename}`;
+    const path = `${folder}/${filename}`;
 
     this.logger.log(`Uploading file to Supabase: ${path}`);
 

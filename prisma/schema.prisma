@@ -25,6 +25,20 @@ model Image {
   @@map("images")
 }
 
+model Video {
+  id         String   @id @default(uuid())
+  prompt     String
+  timestamp  DateTime @default(now())
+  duration   Float?
+  resolution String?
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  asset      Asset    @relation(fields: [assetId], references: [id])
+  assetId    String   @unique
+
+  @@map("videos")
+}
+
 model User {
   id        String   @id @default(uuid())
   username  String   @unique
@@ -32,6 +46,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   images    Image[]
+  videos    Video[]
 
   @@map("users")
 }
@@ -44,6 +59,7 @@ model Asset {
   path      String
   createdAt DateTime @default(now())
   image     Image?
+  video     Video?
 
   @@map("assets")
 }
