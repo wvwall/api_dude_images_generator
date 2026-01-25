@@ -24,7 +24,7 @@ import type {
 } from './interfaces/active-user.interface';
 
 @ApiTags('auth')
-@Controller({ path: 'api/auth', version: '1' })
+@Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
