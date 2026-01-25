@@ -8,7 +8,7 @@ export class CreateImageDto {
   })
   @IsString()
   @IsNotEmpty()
-  prompt: string;
+  prompt!: string;
 
   @ApiProperty({
     description: 'The aspect ratio of the image',
@@ -16,7 +16,7 @@ export class CreateImageDto {
   })
   @IsString()
   @IsNotEmpty()
-  aspectRatio: string;
+  aspectRatio!: string;
 }
 
 export class CreateImageSwaggerDto extends CreateImageDto {
@@ -25,5 +25,5 @@ export class CreateImageSwaggerDto extends CreateImageDto {
     format: 'binary',
     description: 'Image file (PNG, JPEG, WebP). Max 10MB',
   })
-  image: Express.Multer.File;
+  image!: Express.Multer.File;
 }

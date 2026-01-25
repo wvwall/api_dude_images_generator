@@ -27,7 +27,7 @@ export class VideosService {
         },
       });
 
-      this.logger.log(`Found ${videos.length} videos for user: ${userId}`);
+      this.logger.log(`Found ${videos?.length} videos for user: ${userId}`);
       return videos;
     } catch (error) {
       this.logger.error(`Failed to fetch videos for user: ${userId}`, error);

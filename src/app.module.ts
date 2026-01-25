@@ -21,16 +21,24 @@ import { LoggerModule } from 'nestjs-pino';
     PrismaModule,
     LoggerModule.forRoot({
       pinoHttp: {
-        level: 'debug',
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-            translateTime: 'yyyy-mm-dd HH:MM:ss.l',
-            ignore: 'pid,hostname',
-            levelFirst: true,
-          },
-        },
+        level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+        transport:
+          process.env.NODE_ENV !== 'production'
+            ? {
+                target: 'pino-pretty',
+                options: {
+                  colorize: true,
+                  translateTime: 'SYS:HH:MM:ss',
+                  ignore: 'pid,hostname,req,res,responseTime',
+                  messageFormat: '{context} | {msg}',
+                  singleLine: true,
+                },
+              }
+            : undefined,
+        autoLogging: false,
+        customProps: () => ({
+          context: 'HTTP',
+        }),
       },
     }),
   ],

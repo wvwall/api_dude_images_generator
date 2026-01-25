@@ -6,11 +6,11 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  username: string;
+  username!: string;
 
   @ApiProperty({ description: 'User password', minLength: 6 })
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
-  password: string;
+  password!: string;
 }

@@ -9,7 +9,7 @@ export class CreateVideoDto {
   })
   @IsString()
   @IsNotEmpty()
-  prompt: string;
+  prompt!: string;
 
   @ApiProperty({
     description: 'Duration of the video in seconds',
@@ -37,5 +37,5 @@ export class CreateVideoSwaggerDto extends CreateVideoDto {
     format: 'binary',
     description: 'Video file (MP4). Max 50MB',
   })
-  video: Express.Multer.File;
+  video!: Express.Multer.File;
 }
