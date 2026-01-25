@@ -11,7 +11,7 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   app.setGlobalPrefix('api', {
-    exclude: ['docs'],
+    exclude: ['docs', 'uploads'],
   });
 
   // Enable CORS with proper configuration
