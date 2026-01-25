@@ -29,7 +29,7 @@ import type { MulterMemoryFile } from './interfaces/multer-memory-file.interface
 import { multerConfig } from './config/multer.config';
 
 @ApiTags('images')
-@Controller({ path: 'images', version: '1' })
+@Controller({ path: 'api/images', version: '1' })
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 

@@ -6,10 +6,22 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Dude Images Generator API')
+    .setDescription('The Dude Images Generator API description')
+    .setVersion('1.0')
+    .addTag('images')
+    .addTag('videos')
+    .addTag('auth')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+
   app.enableVersioning({
     type: VersioningType.URI,
+    defaultVersion: '1',
   });
-  app.setGlobalPrefix('api');
 
   // Enable CORS with proper configuration
   app.enableCors({
@@ -24,15 +36,6 @@ async function bootstrap() {
   // ...existing code...
   app.use('/uploads', express.static('uploads'));
   // ...existing code...
-  const config = new DocumentBuilder()
-    .setTitle('Dude Images Generator API')
-    .setDescription('The Dude Images Generator API description')
-    .setVersion('1.0')
-    .addTag('images')
-    .addTag('auth')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
